@@ -105,9 +105,9 @@ typedef struct ActiveRegion ActiveRegion;       /* Internal data */
  *
  * The mesh does NOT support isolated vertices; a vertex is deleted along
  * with its last edge.  Similarly when two faces are merged, one of the
- * faces is deleted (see __gl_meshDelete below).  For mesh operations,
+ * faces is deleted (see __gl_wgmaply_meshDelete below).  For mesh operations,
  * all face (loop) and vertex pointers must not be NULL.  However, once
- * mesh manipulation is finished, __gl_MeshZapFace can be used to delete
+ * mesh manipulation is finished, __gl_wgmaply_MeshZapFace can be used to delete
  * faces of the mesh, one at a time.  All external faces can be "zapped"
  * before the mesh is returned to the client; then a NULL face indicates
  * a region which is not part of the output polygon.
@@ -188,10 +188,10 @@ struct GLUmesh
  *
  * ********************** Basic Edge Operations **************************
  *
- * __gl_meshMakeEdge( mesh ) creates one edge, two vertices, and a loop.
+ * __gl_wgmaply_meshMakeEdge( mesh ) creates one edge, two vertices, and a loop.
  * The loop (face) consists of the two new half-edges.
  *
- * __gl_meshSplice( eOrg, eDst ) is the basic operation for changing the
+ * __gl_wgmaply_meshSplice( eOrg, eDst ) is the basic operation for changing the
  * mesh connectivity and topology.  It changes the mesh so that
  *      eOrg->Onext <- OLD(eDst->Onext)
  *      eDst->Onext <- OLD(eOrg->Onext)
@@ -207,7 +207,7 @@ struct GLUmesh
  *  - if eOrg->Lface != eDst->Lface, two distinct loops are joined into one
  * In both cases, eDst->Lface is changed and eOrg->Lface is unaffected.
  *
- * __gl_meshDelete( eDel ) removes the edge eDel.  There are several cases:
+ * __gl_wgmaply_meshDelete( eDel ) removes the edge eDel.  There are several cases:
  * if (eDel->Lface != eDel->Rface), we join two loops into one; the loop
  * eDel->Lface is deleted.  Otherwise, we are splitting one loop into two;
  * the newly created loop will contain eDel->Dst.  If the deletion of eDel
@@ -215,15 +215,15 @@ struct GLUmesh
  *
  * ********************** Other Edge Operations **************************
  *
- * __gl_meshAddEdgeVertex( eOrg ) creates a new edge eNew such that
+ * __gl_wgmaply_meshAddEdgeVertex( eOrg ) creates a new edge eNew such that
  * eNew == eOrg->Lnext, and eNew->Dst is a newly created vertex.
  * eOrg and eNew will have the same left face.
  *
- * __gl_meshSplitEdge( eOrg ) splits eOrg into two edges eOrg and eNew,
+ * __gl_wgmaply_meshSplitEdge( eOrg ) splits eOrg into two edges eOrg and eNew,
  * such that eNew == eOrg->Lnext.  The new vertex is eOrg->Dst == eNew->Org.
  * eOrg and eNew will have the same left face.
  *
- * __gl_meshConnect( eOrg, eDst ) creates a new edge from eOrg->Dst
+ * __gl_wgmaply_meshConnect( eOrg, eDst ) creates a new edge from eOrg->Dst
  * to eDst->Org, and returns the corresponding half-edge eNew.
  * If eOrg->Lface == eDst->Lface, this splits one loop into two,
  * and the newly created loop is eNew->Lface.  Otherwise, two disjoint
@@ -231,41 +231,41 @@ struct GLUmesh
  *
  * ************************ Other Operations *****************************
  *
- * __gl_meshNewMesh() creates a new mesh with no edges, no vertices,
+ * __gl_wgmaply_meshNewMesh() creates a new mesh with no edges, no vertices,
  * and no loops (what we usually call a "face").
  *
- * __gl_meshUnion( mesh1, mesh2 ) forms the union of all structures in
+ * __gl_wgmaply_meshUnion( mesh1, mesh2 ) forms the union of all structures in
  * both meshes, and returns the new mesh (the old meshes are destroyed).
  *
- * __gl_meshDeleteMesh( mesh ) will free all storage for any valid mesh.
+ * __gl_wgmaply_meshDeleteMesh( mesh ) will free all storage for any valid mesh.
  *
- * __gl_meshZapFace( fZap ) destroys a face and removes it from the
+ * __gl_wgmaply_meshZapFace( fZap ) destroys a face and removes it from the
  * global face list.  All edges of fZap will have a NULL pointer as their
  * left face.  Any edges which also have a NULL pointer as their right face
  * are deleted entirely (along with any isolated vertices this produces).
  * An entire mesh can be deleted by zapping its faces, one at a time,
  * in any order.  Zapped faces cannot be used in further mesh operations!
  *
- * __gl_meshCheckMesh( mesh ) checks a mesh for self-consistency.
+ * __gl_wgmaply_meshCheckMesh( mesh ) checks a mesh for self-consistency.
  */
 
-GLUhalfEdge* __gl_meshMakeEdge(GLUmesh* mesh);
-int          __gl_meshSplice(GLUhalfEdge* eOrg, GLUhalfEdge* eDst);
-int          __gl_meshDelete(GLUhalfEdge* eDel);
+GLUhalfEdge* __gl_wgmaply_meshMakeEdge(GLUmesh* mesh);
+int          __gl_wgmaply_meshSplice(GLUhalfEdge* eOrg, GLUhalfEdge* eDst);
+int          __gl_wgmaply_meshDelete(GLUhalfEdge* eDel);
 
-GLUhalfEdge* __gl_meshAddEdgeVertex(GLUhalfEdge* eOrg);
-GLUhalfEdge* __gl_meshSplitEdge(GLUhalfEdge* eOrg);
-GLUhalfEdge* __gl_meshConnect(GLUhalfEdge* eOrg, GLUhalfEdge* eDst);
+GLUhalfEdge* __gl_wgmaply_meshAddEdgeVertex(GLUhalfEdge* eOrg);
+GLUhalfEdge* __gl_wgmaply_meshSplitEdge(GLUhalfEdge* eOrg);
+GLUhalfEdge* __gl_wgmaply_meshConnect(GLUhalfEdge* eOrg, GLUhalfEdge* eDst);
 
-GLUmesh*     __gl_meshNewMesh(void);
-GLUmesh*     __gl_meshUnion(GLUmesh* mesh1, GLUmesh* mesh2);
-void         __gl_meshDeleteMesh(GLUmesh* mesh);
-void         __gl_meshZapFace(GLUface* fZap);
+GLUmesh*     __gl_wgmaply_meshNewMesh(void);
+GLUmesh*     __gl_wgmaply_meshUnion(GLUmesh* mesh1, GLUmesh* mesh2);
+void         __gl_wgmaply_meshDeleteMesh(GLUmesh* mesh);
+void         __gl_wgmaply_meshZapFace(GLUface* fZap);
 
 #ifdef NDEBUG
-   #define __gl_meshCheckMesh(mesh)
+   #define __gl_wgmaply_meshCheckMesh(mesh)
 #else
-   void __gl_meshCheckMesh(GLUmesh* mesh);
+   void __gl_wgmaply_meshCheckMesh(GLUmesh* mesh);
 #endif
 
 #endif /* __mesh_h_ */

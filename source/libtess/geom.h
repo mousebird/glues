@@ -54,15 +54,15 @@
                          ((u)->s == (v)->s && (u)->t <= (v)->t))
 #endif
 
-#define EdgeEval(u, v, w) __gl_edgeEval(u, v, w)
-#define EdgeSign(u, v, w) __gl_edgeSign(u, v, w)
+#define EdgeEval(u, v, w) __gl_wgmaply_edgeEval(u, v, w)
+#define EdgeSign(u, v, w) __gl_wgmaply_edgeSign(u, v, w)
 
 /* Versions of VertLeq, EdgeSign, EdgeEval with s and t transposed. */
 
 #define TransLeq(u,v)   (((u)->t < (v)->t) || \
                          ((u)->t == (v)->t && (u)->s <= (v)->s))
-#define TransEval(u,v,w)        __gl_transEval(u,v,w)
-#define TransSign(u,v,w)        __gl_transSign(u,v,w)
+#define TransEval(u,v,w)        __gl_wgmaply_transEval(u,v,w)
+#define TransSign(u,v,w)        __gl_wgmaply_transSign(u,v,w)
 
 #define EdgeGoesLeft(e)         VertLeq((e)->Dst, (e)->Org)
 #define EdgeGoesRight(e)        VertLeq((e)->Org, (e)->Dst)
@@ -71,15 +71,15 @@
 #define ABS(x) ((x)<0 ? -(x) : (x))
 #define VertL1dist(u, v) (ABS(u->s-v->s)+ABS(u->t-v->t))
 
-#define VertCCW(u, v, w) __gl_vertCCW(u, v, w)
+#define VertCCW(u, v, w) __gl_wgmaply_vertCCW(u, v, w)
 
-int     __gl_vertLeq(GLUvertex* u, GLUvertex* v);
-GLfloat __gl_edgeEval(GLUvertex* u, GLUvertex* v, GLUvertex* w);
-GLfloat __gl_edgeSign(GLUvertex* u, GLUvertex* v, GLUvertex* w);
-GLfloat __gl_transEval(GLUvertex* u, GLUvertex* v, GLUvertex* w);
-GLfloat __gl_transSign(GLUvertex* u, GLUvertex* v, GLUvertex* w);
-int     __gl_vertCCW(GLUvertex* u, GLUvertex* v, GLUvertex* w);
-void    __gl_edgeIntersect(GLUvertex* o1, GLUvertex* d1,
+int     __gl_wgmaply_vertLeq(GLUvertex* u, GLUvertex* v);
+GLfloat __gl_wgmaply_edgeEval(GLUvertex* u, GLUvertex* v, GLUvertex* w);
+GLfloat __gl_wgmaply_edgeSign(GLUvertex* u, GLUvertex* v, GLUvertex* w);
+GLfloat __gl_wgmaply_transEval(GLUvertex* u, GLUvertex* v, GLUvertex* w);
+GLfloat __gl_wgmaply_transSign(GLUvertex* u, GLUvertex* v, GLUvertex* w);
+int     __gl_wgmaply_vertCCW(GLUvertex* u, GLUvertex* v, GLUvertex* w);
+void    __gl_wgmaply_edgeIntersect(GLUvertex* o1, GLUvertex* d1,
                            GLUvertex* o2, GLUvertex* d2,
                            GLUvertex* v);
 

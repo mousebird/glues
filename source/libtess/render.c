@@ -66,14 +66,14 @@ static void RenderMaximumFaceGroup(GLUtesselator* tess, GLUface* fOrig);
 static void RenderLonelyTriangles(GLUtesselator* tess, GLUface* head);
 
 /************************ Strips and Fans decomposition ******************/
-/* __gl_renderMesh( tess, mesh ) takes a mesh and breaks it into triangle
+/* __gl_wgmaply_renderMesh( tess, mesh ) takes a mesh and breaks it into triangle
  * fans, strips, and separate triangles.  A substantial effort is made
  * to use as few rendering primitives as possible (ie. to make the fans
  * and strips as large as possible).
  *
  * The rendering output is provided as callbacks (see the api).
  */
-void __gl_renderMesh(GLUtesselator* tess, GLUmesh* mesh)
+void __gl_wgmaply_renderMesh(GLUtesselator* tess, GLUmesh* mesh)
 {
    GLUface* f;
 
@@ -377,11 +377,11 @@ static void RenderStrip(GLUtesselator* tess, GLUhalfEdge* e, long size)
 }
 
 /************************ Boundary contour decomposition ******************/
-/* __gl_renderBoundary( tess, mesh ) takes a mesh, and outputs one
+/* __gl_wgmaply_renderBoundary( tess, mesh ) takes a mesh, and outputs one
  * contour for each face marked "inside".  The rendering output is
  * provided as callbacks (see the api).
  */
-void __gl_renderBoundary(GLUtesselator* tess, GLUmesh* mesh)
+void __gl_wgmaply_renderBoundary(GLUtesselator* tess, GLUmesh* mesh)
 {
    GLUface* f;
    GLUhalfEdge* e;
@@ -499,14 +499,14 @@ static int ComputeNormal(GLUtesselator* tess, GLfloat norm[3], int check)
    return sign;
 }
 
-/* __gl_renderCache( tess ) takes a single contour and tries to render it
+/* __gl_wgmaply_renderCache( tess ) takes a single contour and tries to render it
  * as a triangle fan.  This handles convex polygons, as well as some
  * non-convex polygons if we get lucky.
  *
  * Returns TRUE if the polygon was successfully rendered.  The rendering
  * output is provided as callbacks (see the api).
  */
-GLboolean __gl_renderCache(GLUtesselator* tess)
+GLboolean __gl_wgmaply_renderCache(GLUtesselator* tess)
 {
    CachedVertex* v0=tess->cache;
    CachedVertex* vn=v0+tess->cacheCount;

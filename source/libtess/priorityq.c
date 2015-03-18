@@ -47,7 +47,7 @@
 
 #include "priorityq-sort.h"
 
-/* really __gl_pqSortNewPriorityQ */
+/* really __gl_wgmaply_pqSortNewPriorityQ */
 PriorityQ* pqNewPriorityQ(int (*leq)(PQkey key1, PQkey key2))
 {
    PriorityQ* pq=(PriorityQ*)memAlloc(sizeof(PriorityQ));
@@ -56,7 +56,7 @@ PriorityQ* pqNewPriorityQ(int (*leq)(PQkey key1, PQkey key2))
       return NULL;
    }
 
-   pq->heap=__gl_pqHeapNewPriorityQ(leq);
+   pq->heap=__gl_wgmaply_pqHeapNewPriorityQ(leq);
    if (pq->heap==NULL)
    {
       memFree(pq);
@@ -66,7 +66,7 @@ PriorityQ* pqNewPriorityQ(int (*leq)(PQkey key1, PQkey key2))
    pq->keys=(PQHeapKey*)memAlloc(INIT_SIZE*sizeof(pq->keys[0]));
    if (pq->keys==NULL)
    {
-      __gl_pqHeapDeletePriorityQ(pq->heap);
+      __gl_wgmaply_pqHeapDeletePriorityQ(pq->heap);
       memFree(pq);
       return NULL;
    }
@@ -79,13 +79,13 @@ PriorityQ* pqNewPriorityQ(int (*leq)(PQkey key1, PQkey key2))
    return pq;
 }
 
-/* really __gl_pqSortDeletePriorityQ */
+/* really __gl_wgmaply_pqSortDeletePriorityQ */
 void pqDeletePriorityQ(PriorityQ* pq)
 {
    assert(pq!=NULL);
    if (pq->heap!=NULL)
    {
-      __gl_pqHeapDeletePriorityQ(pq->heap);
+      __gl_wgmaply_pqHeapDeletePriorityQ(pq->heap);
    }
    if (pq->order!=NULL)
    {
@@ -102,7 +102,7 @@ void pqDeletePriorityQ(PriorityQ* pq)
 #define GT(x,y)   (!LEQ(x,y))
 #define Swap(a, b) if(1) { PQkey* tmp=*a; *a=*b; *b=tmp; } else
 
-/* really __gl_pqSortInit */
+/* really __gl_wgmaply_pqSortInit */
 int pqInit(PriorityQ* pq)
 {
    PQkey**p, **r, **i, **j, *piv;
@@ -194,7 +194,7 @@ int pqInit(PriorityQ* pq)
 
    pq->max=pq->size;
    pq->initialized=TRUE;
-   __gl_pqHeapInit(pq->heap);   /* always succeeds */
+   __gl_wgmaply_pqHeapInit(pq->heap);   /* always succeeds */
 
 #ifndef NDEBUG
    p=pq->order;
@@ -209,7 +209,7 @@ int pqInit(PriorityQ* pq)
    return 1;
 }
 
-/* really __gl_pqSortInsert */
+/* really __gl_wgmaply_pqSortInsert */
 /* returns LONG_MAX iff out of memory */
 PQhandle pqInsert(PriorityQ* pq, PQkey keyNew)
 {
@@ -217,7 +217,7 @@ PQhandle pqInsert(PriorityQ* pq, PQkey keyNew)
 
    if (pq->initialized)
    {
-      return __gl_pqHeapInsert(pq->heap, keyNew);
+      return __gl_wgmaply_pqHeapInsert(pq->heap, keyNew);
    }
 
    curr=pq->size;
@@ -242,23 +242,23 @@ PQhandle pqInsert(PriorityQ* pq, PQkey keyNew)
    return -(curr+1);
 }
 
-/* really __gl_pqSortExtractMin */
+/* really __gl_wgmaply_pqSortExtractMin */
 PQkey pqExtractMin(PriorityQ* pq)
 {
    PQkey sortMin, heapMin;
 
    if (pq->size==0)
    {
-      return __gl_pqHeapExtractMin(pq->heap);
+      return __gl_wgmaply_pqHeapExtractMin(pq->heap);
    }
 
    sortMin=*(pq->order[pq->size-1]);
-   if (!__gl_pqHeapIsEmpty(pq->heap))
+   if (!__gl_wgmaply_pqHeapIsEmpty(pq->heap))
    {
-      heapMin=__gl_pqHeapMinimum(pq->heap);
+      heapMin=__gl_wgmaply_pqHeapMinimum(pq->heap);
       if (LEQ(heapMin, sortMin))
       {
-         return __gl_pqHeapExtractMin(pq->heap);
+         return __gl_wgmaply_pqHeapExtractMin(pq->heap);
       }
    }
    do {
@@ -268,20 +268,20 @@ PQkey pqExtractMin(PriorityQ* pq)
    return sortMin;
 }
 
-/* really __gl_pqSortMinimum */
+/* really __gl_wgmaply_pqSortMinimum */
 PQkey pqMinimum(PriorityQ* pq)
 {
    PQkey sortMin, heapMin;
 
    if (pq->size==0)
    {
-      return __gl_pqHeapMinimum(pq->heap);
+      return __gl_wgmaply_pqHeapMinimum(pq->heap);
    }
 
    sortMin=*(pq->order[pq->size-1]);
-   if (!__gl_pqHeapIsEmpty(pq->heap))
+   if (!__gl_wgmaply_pqHeapIsEmpty(pq->heap))
    {
-      heapMin=__gl_pqHeapMinimum(pq->heap);
+      heapMin=__gl_wgmaply_pqHeapMinimum(pq->heap);
       if (LEQ(heapMin, sortMin))
       {
          return heapMin;
@@ -291,18 +291,18 @@ PQkey pqMinimum(PriorityQ* pq)
    return sortMin;
 }
 
-/* really __gl_pqSortIsEmpty */
+/* really __gl_wgmaply_pqSortIsEmpty */
 int pqIsEmpty(PriorityQ* pq)
 {
-   return (pq->size==0) && __gl_pqHeapIsEmpty(pq->heap);
+   return (pq->size==0) && __gl_wgmaply_pqHeapIsEmpty(pq->heap);
 }
 
-/* really __gl_pqSortDelete */
+/* really __gl_wgmaply_pqSortDelete */
 void pqDelete(PriorityQ* pq, PQhandle curr)
 {
    if (curr>=0)
    {
-      __gl_pqHeapDelete(pq->heap, curr);
+      __gl_wgmaply_pqHeapDelete(pq->heap, curr);
       return;
    }
 

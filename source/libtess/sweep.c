@@ -162,7 +162,7 @@ static void DeleteRegion(GLUtesselator* tess, ActiveRegion* reg)
       assert(reg->eUp->winding==0);
    }
    reg->eUp->activeRegion=NULL;
-   dictDelete(tess->dict, reg->nodeUp); /* __gl_dictListDelete */
+   dictDelete(tess->dict, reg->nodeUp); /* __gl_wgmaply_dictListDelete */
    memFree(reg);
 }
 
@@ -172,7 +172,7 @@ static void DeleteRegion(GLUtesselator* tess, ActiveRegion* reg)
 static int FixUpperEdge(ActiveRegion* reg, GLUhalfEdge* newEdge)
 {
    assert(reg->fixUpperEdge);
-   if (!__gl_meshDelete(reg->eUp))
+   if (!__gl_wgmaply_meshDelete(reg->eUp))
    {
       return 0;
    }
@@ -198,7 +198,7 @@ static ActiveRegion* TopLeftRegion(ActiveRegion* reg)
     */
    if (reg->fixUpperEdge)
    {
-      e=__gl_meshConnect(RegionBelow(reg)->eUp->Sym, reg->eUp->Lnext);
+      e=__gl_wgmaply_meshConnect(RegionBelow(reg)->eUp->Sym, reg->eUp->Lnext);
       if (e==NULL)
       {
          return NULL;
@@ -240,7 +240,7 @@ static ActiveRegion* AddRegionBelow(GLUtesselator* tess, ActiveRegion* regAbove,
    }
 
    regNew->eUp=eNewUp;
-   /* __gl_dictListInsertBefore */
+   /* __gl_wgmaply_dictListInsertBefore */
    regNew->nodeUp=dictInsertBefore(tess->dict, regAbove->nodeUp, regNew);
    if (regNew->nodeUp==NULL)
    {
@@ -298,7 +298,7 @@ static void FinishRegion(GLUtesselator* tess, ActiveRegion* reg)
    GLUface* f=e->Lface;
 
    f->inside=reg->inside;
-   /* optimization for __gl_meshTessellateMonoRegion() */
+   /* optimization for __gl_wgmaply_meshTessellateMonoRegion() */
    f->anEdge=e;
    DeleteRegion(tess, reg);
 }
@@ -348,7 +348,7 @@ static GLUhalfEdge* FinishLeftRegions(GLUtesselator* tess, ActiveRegion* regFirs
          /* If the edge below was a temporary edge introduced by
           * ConnectRightVertex, now is the time to fix it.
           */
-         e=__gl_meshConnect(ePrev->Lprev, e->Sym);
+         e=__gl_wgmaply_meshConnect(ePrev->Lprev, e->Sym);
          if (e==NULL)
          {
             longjmp(tess->env, 1);
@@ -362,11 +362,11 @@ static GLUhalfEdge* FinishLeftRegions(GLUtesselator* tess, ActiveRegion* regFirs
       /* Relink edges so that ePrev->Onext == e */
       if (ePrev->Onext!=e)
       {
-         if (!__gl_meshSplice(e->Oprev, e))
+         if (!__gl_wgmaply_meshSplice(e->Oprev, e))
          {
             longjmp(tess->env, 1);
          }
-         if (!__gl_meshSplice(ePrev, e))
+         if (!__gl_wgmaply_meshSplice(ePrev, e))
          {
             longjmp(tess->env, 1);
          }
@@ -432,11 +432,11 @@ static void AddRightEdges(GLUtesselator* tess, ActiveRegion* regUp,
       if (e->Onext!=ePrev)
       {
          /* Unlink e from its current position, and relink below ePrev */
-         if (!__gl_meshSplice(e->Oprev, e))
+         if (!__gl_wgmaply_meshSplice(e->Oprev, e))
          {
             longjmp(tess->env, 1);
          }
-         if (!__gl_meshSplice(ePrev->Oprev, e))
+         if (!__gl_wgmaply_meshSplice(ePrev->Oprev, e))
          {
             longjmp(tess->env, 1);
          }
@@ -447,14 +447,14 @@ static void AddRightEdges(GLUtesselator* tess, ActiveRegion* regUp,
       reg->inside=IsWindingInside(tess,reg->windingNumber);
 
       /* Check for two outgoing edges with same slope -- process these
-       * before any intersection tests (see example in __gl_computeInterior).
+       * before any intersection tests (see example in __gl_wgmaply_computeInterior).
        */
       regPrev->dirty=TRUE;
       if (!firstTime && CheckForRightSplice(tess, regPrev))
       {
          AddWinding(e, ePrev);
          DeleteRegion(tess, regPrev);
-         if (!__gl_meshDelete(ePrev))
+         if (!__gl_wgmaply_meshDelete(ePrev))
          {
             longjmp(tess->env, 1);
          }
@@ -519,7 +519,7 @@ static void SpliceMergeVertices(GLUtesselator* tess, GLUhalfEdge *e1, GLUhalfEdg
    data[0]=e1->Org->data;
    data[1]=e2->Org->data;
    CallCombine(tess, e1->Org, data, weights, FALSE);
-   if (!__gl_meshSplice(e1, e2))
+   if (!__gl_wgmaply_meshSplice(e1, e2))
    {
       longjmp(tess->env, 1);
    }
@@ -611,11 +611,11 @@ static int CheckForRightSplice(GLUtesselator* tess, ActiveRegion* regUp)
       if (!VertEq(eUp->Org, eLo->Org))
       {
          /* Splice eUp->Org into eLo */
-         if ( __gl_meshSplitEdge(eLo->Sym)==NULL)
+         if ( __gl_wgmaply_meshSplitEdge(eLo->Sym)==NULL)
          {
             longjmp(tess->env, 1);
          }
-         if (!__gl_meshSplice(eUp, eLo->Oprev))
+         if (!__gl_wgmaply_meshSplice(eUp, eLo->Oprev))
          {
             longjmp(tess->env, 1);
          }
@@ -626,7 +626,7 @@ static int CheckForRightSplice(GLUtesselator* tess, ActiveRegion* regUp)
          if (eUp->Org!=eLo->Org)
          {
             /* merge the two vertices, discarding eUp->Org */
-            pqDelete(tess->pq, eUp->Org->pqHandle); /* __gl_pqSortDelete */
+            pqDelete(tess->pq, eUp->Org->pqHandle); /* __gl_wgmaply_pqSortDelete */
             SpliceMergeVertices(tess, eLo->Oprev, eUp);
          }
       }
@@ -640,11 +640,11 @@ static int CheckForRightSplice(GLUtesselator* tess, ActiveRegion* regUp)
 
       /* eLo->Org appears to be above eUp, so splice eLo->Org into eUp */
       RegionAbove(regUp)->dirty=regUp->dirty=TRUE;
-      if (__gl_meshSplitEdge(eUp->Sym)==NULL)
+      if (__gl_wgmaply_meshSplitEdge(eUp->Sym)==NULL)
       {
          longjmp(tess->env, 1);
       }
-      if (!__gl_meshSplice(eLo->Oprev, eUp))
+      if (!__gl_wgmaply_meshSplice(eLo->Oprev, eUp))
       {
          longjmp(tess->env, 1);
       }
@@ -689,12 +689,12 @@ static int CheckForLeftSplice(GLUtesselator* tess, ActiveRegion* regUp)
 
       /* eLo->Dst is above eUp, so splice eLo->Dst into eUp */
       RegionAbove(regUp)->dirty=regUp->dirty=TRUE;
-      e=__gl_meshSplitEdge(eUp);
+      e=__gl_wgmaply_meshSplitEdge(eUp);
       if (e==NULL)
       {
          longjmp(tess->env, 1);
       }
-      if (!__gl_meshSplice(eLo->Sym, e))
+      if (!__gl_wgmaply_meshSplice(eLo->Sym, e))
       {
          longjmp(tess->env, 1);
       }
@@ -709,12 +709,12 @@ static int CheckForLeftSplice(GLUtesselator* tess, ActiveRegion* regUp)
 
       /* eUp->Dst is below eLo, so splice eUp->Dst into eLo */
       regUp->dirty=regLo->dirty=TRUE;
-      e=__gl_meshSplitEdge(eLo);
+      e=__gl_wgmaply_meshSplitEdge(eLo);
       if (e==NULL)
       {
          longjmp(tess->env, 1);
       }
-      if (!__gl_meshSplice(eUp->Lnext, eLo->Sym))
+      if (!__gl_wgmaply_meshSplice(eUp->Lnext, eLo->Sym))
       {
          longjmp(tess->env, 1);
       }
@@ -785,7 +785,7 @@ static int CheckForIntersect(GLUtesselator* tess, ActiveRegion* regUp)
    /* At this point the edges intersect, at least marginally */
    DebugEvent(tess);
 
-   __gl_edgeIntersect(dstUp, orgUp, dstLo, orgLo, &isect);
+   __gl_wgmaply_edgeIntersect(dstUp, orgUp, dstLo, orgLo, &isect);
    /* The following properties are guaranteed: */
    assert(MIN(orgUp->t, dstUp->t)<=isect.t);
    assert(isect.t<=MAX(orgLo->t, dstLo->t));
@@ -834,11 +834,11 @@ static int CheckForIntersect(GLUtesselator* tess, ActiveRegion* regUp)
       if (dstLo==tess->event)
       {
          /* Splice dstLo into eUp, and process the new region(s) */
-         if (__gl_meshSplitEdge(eUp->Sym)==NULL)
+         if (__gl_wgmaply_meshSplitEdge(eUp->Sym)==NULL)
          {
             longjmp(tess->env, 1);
          }
-         if (!__gl_meshSplice(eLo->Sym, eUp))
+         if (!__gl_wgmaply_meshSplice(eLo->Sym, eUp))
          {
             longjmp(tess->env, 1);
          }
@@ -856,11 +856,11 @@ static int CheckForIntersect(GLUtesselator* tess, ActiveRegion* regUp)
       if (dstUp==tess->event)
       {
          /* Splice dstUp into eLo, and process the new region(s) */
-         if (__gl_meshSplitEdge(eLo->Sym)==NULL)
+         if (__gl_wgmaply_meshSplitEdge(eLo->Sym)==NULL)
          {
             longjmp(tess->env, 1);
          }
-         if (!__gl_meshSplice(eUp->Lnext, eLo->Oprev))
+         if (!__gl_wgmaply_meshSplice(eUp->Lnext, eLo->Oprev))
          {
             longjmp(tess->env, 1);
          }
@@ -881,7 +881,7 @@ static int CheckForIntersect(GLUtesselator* tess, ActiveRegion* regUp)
       if (EdgeSign(dstUp, tess->event, &isect)>=0)
       {
          RegionAbove(regUp)->dirty=regUp->dirty=TRUE;
-         if (__gl_meshSplitEdge(eUp->Sym)==NULL)
+         if (__gl_wgmaply_meshSplitEdge(eUp->Sym)==NULL)
          {
             longjmp(tess->env, 1);
          }
@@ -892,7 +892,7 @@ static int CheckForIntersect(GLUtesselator* tess, ActiveRegion* regUp)
       if (EdgeSign(dstLo, tess->event, &isect)<=0)
       {
          regUp->dirty=regLo->dirty=TRUE;
-         if (__gl_meshSplitEdge(eLo->Sym)==NULL)
+         if (__gl_wgmaply_meshSplitEdge(eLo->Sym)==NULL)
          {
             longjmp(tess->env, 1);
          }
@@ -912,25 +912,25 @@ static int CheckForIntersect(GLUtesselator* tess, ActiveRegion* regUp)
     * the mesh (ie. eUp->Lface) to be smaller than the faces in the
     * unprocessed original contours (which will be eLo->Oprev->Lface).
     */
-   if (__gl_meshSplitEdge(eUp->Sym)==NULL)
+   if (__gl_wgmaply_meshSplitEdge(eUp->Sym)==NULL)
    {
       longjmp(tess->env, 1);
    }
-   if (__gl_meshSplitEdge(eLo->Sym)==NULL)
+   if (__gl_wgmaply_meshSplitEdge(eLo->Sym)==NULL)
    {
       longjmp(tess->env, 1);
    }
-   if (!__gl_meshSplice(eLo->Oprev, eUp))
+   if (!__gl_wgmaply_meshSplice(eLo->Oprev, eUp))
    {
       longjmp(tess->env, 1);
    }
    eUp->Org->s=isect.s;
    eUp->Org->t=isect.t;
 
-   eUp->Org->pqHandle=pqInsert(tess->pq, eUp->Org);   /* __gl_pqSortInsert */
+   eUp->Org->pqHandle=pqInsert(tess->pq, eUp->Org);   /* __gl_wgmaply_pqSortInsert */
    if (eUp->Org->pqHandle==LONG_MAX)
    {
-      pqDeletePriorityQ(tess->pq); /* __gl_pqSortDeletePriorityQ */
+      pqDeletePriorityQ(tess->pq); /* __gl_wgmaply_pqSortDeletePriorityQ */
       tess->pq=NULL;
       longjmp(tess->env, 1);
    }
@@ -988,7 +988,7 @@ static void WalkDirtyRegions(GLUtesselator* tess, ActiveRegion* regUp)
             if (regLo->fixUpperEdge)
             {
                DeleteRegion(tess, regLo);
-               if (!__gl_meshDelete(eLo))
+               if (!__gl_wgmaply_meshDelete(eLo))
                {
                   longjmp(tess->env, 1);
                }
@@ -1000,7 +1000,7 @@ static void WalkDirtyRegions(GLUtesselator* tess, ActiveRegion* regUp)
                if (regUp->fixUpperEdge)
                {
                   DeleteRegion(tess, regUp);
-                  if (!__gl_meshDelete(eUp))
+                  if (!__gl_wgmaply_meshDelete(eUp))
                   {
                      longjmp(tess->env, 1);
                   }
@@ -1045,7 +1045,7 @@ static void WalkDirtyRegions(GLUtesselator* tess, ActiveRegion* regUp)
          /* A degenerate loop consisting of only two edges -- delete it. */
          AddWinding(eLo, eUp);
          DeleteRegion(tess, regUp);
-         if (!__gl_meshDelete(eUp))
+         if (!__gl_wgmaply_meshDelete(eUp))
          {
             longjmp(tess->env, 1);
          }
@@ -1105,7 +1105,7 @@ static void ConnectRightVertex(GLUtesselator* tess, ActiveRegion* regUp,
     */
    if (VertEq(eUp->Org, tess->event))
    {
-      if (!__gl_meshSplice(eTopLeft->Oprev, eUp))
+      if (!__gl_wgmaply_meshSplice(eTopLeft->Oprev, eUp))
       {
          longjmp(tess->env, 1);
       }
@@ -1121,7 +1121,7 @@ static void ConnectRightVertex(GLUtesselator* tess, ActiveRegion* regUp,
 
    if (VertEq(eLo->Org, tess->event))
    {
-      if (!__gl_meshSplice(eBottomLeft, eLo->Oprev))
+      if (!__gl_wgmaply_meshSplice(eBottomLeft, eLo->Oprev))
       {
          longjmp(tess->env, 1);
       }
@@ -1146,7 +1146,7 @@ static void ConnectRightVertex(GLUtesselator* tess, ActiveRegion* regUp,
    {
       eNew = eUp;
    }
-   eNew=__gl_meshConnect(eBottomLeft->Lprev, eNew);
+   eNew=__gl_wgmaply_meshConnect(eBottomLeft->Lprev, eNew);
    if (eNew==NULL)
    {
       longjmp(tess->env, 1);
@@ -1197,20 +1197,20 @@ static void ConnectLeftDegenerate(GLUtesselator* tess,
    if (!VertEq(e->Dst, vEvent))
    {
      /* General case -- splice vEvent into edge e which passes through it */
-     if (__gl_meshSplitEdge(e->Sym)==NULL)
+     if (__gl_wgmaply_meshSplitEdge(e->Sym)==NULL)
      {
         longjmp(tess->env, 1);
      }
      if (regUp->fixUpperEdge)
      {
          /* This edge was fixable -- delete unused portion of original edge */
-         if (!__gl_meshDelete(e->Onext))
+         if (!__gl_wgmaply_meshDelete(e->Onext))
          {
             longjmp(tess->env, 1);
          }
          regUp->fixUpperEdge=FALSE;
       }
-      if (!__gl_meshSplice(vEvent->anEdge, e))
+      if (!__gl_wgmaply_meshSplice(vEvent->anEdge, e))
       {
          longjmp(tess->env, 1);
       }
@@ -1233,13 +1233,13 @@ static void ConnectLeftDegenerate(GLUtesselator* tess,
        */
       assert(eTopLeft!=eTopRight);  /* there are some left edges too */
       DeleteRegion(tess, reg);
-      if (!__gl_meshDelete(eTopRight))
+      if (!__gl_wgmaply_meshDelete(eTopRight))
       {
          longjmp(tess->env, 1);
       }
       eTopRight=eTopLeft->Oprev;
    }
-   if (!__gl_meshSplice(vEvent->anEdge, eTopRight))
+   if (!__gl_wgmaply_meshSplice(vEvent->anEdge, eTopRight))
    {
       longjmp(tess->env, 1);
    }
@@ -1278,7 +1278,7 @@ static void ConnectLeftVertex(GLUtesselator* tess, GLUvertex* vEvent)
 
    /* Get a pointer to the active region containing vEvent */
    tmp.eUp=vEvent->anEdge->Sym;
-   /* __GL_DICTLISTKEY */ /* __gl_dictListSearch */
+   /* __gl_wgmaply_DICTLISTKEY */ /* __gl_wgmaply_dictListSearch */
    regUp=(ActiveRegion*)dictKey(dictSearch(tess->dict, &tmp));
    regLo=RegionBelow(regUp);
    eUp=regUp->eUp;
@@ -1300,7 +1300,7 @@ static void ConnectLeftVertex(GLUtesselator* tess, GLUvertex* vEvent)
    {
       if (reg==regUp)
       {
-         eNew=__gl_meshConnect(vEvent->anEdge->Sym, eUp->Lnext);
+         eNew=__gl_wgmaply_meshConnect(vEvent->anEdge->Sym, eUp->Lnext);
          if (eNew==NULL)
          {
             longjmp(tess->env, 1);
@@ -1308,7 +1308,7 @@ static void ConnectLeftVertex(GLUtesselator* tess, GLUvertex* vEvent)
       }
       else
       {
-         GLUhalfEdge* tempHalfEdge=__gl_meshConnect(eLo->Dnext, vEvent->anEdge);
+         GLUhalfEdge* tempHalfEdge=__gl_wgmaply_meshConnect(eLo->Dnext, vEvent->anEdge);
          if (tempHalfEdge==NULL)
          {
             longjmp(tess->env, 1);
@@ -1422,7 +1422,7 @@ static void AddSentinel(GLUtesselator* tess, GLfloat t)
       longjmp(tess->env, 1);
    }
 
-   e=__gl_meshMakeEdge(tess->mesh);
+   e=__gl_wgmaply_meshMakeEdge(tess->mesh);
    if (e==NULL)
    {
       longjmp(tess->env, 1);
@@ -1440,7 +1440,7 @@ static void AddSentinel(GLUtesselator* tess, GLfloat t)
    reg->fixUpperEdge=FALSE;
    reg->sentinel=TRUE;
    reg->dirty=FALSE;
-   reg->nodeUp=dictInsert(tess->dict, reg); /* __gl_dictListInsertBefore */
+   reg->nodeUp=dictInsert(tess->dict, reg); /* __gl_wgmaply_dictListInsertBefore */
 
    if (reg->nodeUp==NULL)
    {
@@ -1454,7 +1454,7 @@ static void AddSentinel(GLUtesselator* tess, GLfloat t)
  */
 static void InitEdgeDict(GLUtesselator* tess)
 {
-   /* __gl_dictListNewDict */
+   /* __gl_wgmaply_dictListNewDict */
    tess->dict=dictNewDict(tess, (int (*)(void*, DictKey, DictKey))EdgeLeq);
    if (tess->dict==NULL)
    {
@@ -1472,7 +1472,7 @@ static void DoneEdgeDict(GLUtesselator* tess)
    int fixedEdges=0;
 #endif
 
-   /* __GL_DICTLISTKEY */ /* __GL_DICTLISTMIN */
+   /* __gl_wgmaply_DICTLISTKEY */ /* __gl_wgmaply_DICTLISTMIN */
    while ((reg=(ActiveRegion*)dictKey(dictMin(tess->dict)))!=NULL)
    {
       /*
@@ -1488,7 +1488,7 @@ static void DoneEdgeDict(GLUtesselator* tess)
       assert(reg->windingNumber==0);
       DeleteRegion(tess, reg);
    }
-   dictDeleteDict(tess->dict); /* __gl_dictListDeleteDict */
+   dictDeleteDict(tess->dict); /* __gl_wgmaply_dictListDeleteDict */
 }
 
 /*
@@ -1511,7 +1511,7 @@ static void RemoveDegenerateEdges(GLUtesselator* tess)
       {
          /* Zero-length edge, contour has at least 3 edges */
          SpliceMergeVertices(tess, eLnext, e);  /* deletes e->Org */
-         if (!__gl_meshDelete(e))
+         if (!__gl_wgmaply_meshDelete(e))
          {
             longjmp(tess->env, 1); /* e is a self-loop */
          }
@@ -1528,7 +1528,7 @@ static void RemoveDegenerateEdges(GLUtesselator* tess)
             {
                eNext=eNext->next;
             }
-            if (!__gl_meshDelete(eLnext))
+            if (!__gl_wgmaply_meshDelete(eLnext))
             {
                longjmp(tess->env, 1);
             }
@@ -1537,7 +1537,7 @@ static void RemoveDegenerateEdges(GLUtesselator* tess)
          {
             eNext=eNext->next;
          }
-         if (!__gl_meshDelete(e))
+         if (!__gl_wgmaply_meshDelete(e))
          {
             longjmp(tess->env, 1);
          }
@@ -1555,8 +1555,8 @@ static int InitPriorityQ(GLUtesselator* tess)
    GLUvertex* v;
    GLUvertex* vHead;
 
-   /* __gl_pqSortNewPriorityQ */
-   pq=tess->pq=pqNewPriorityQ((int (*)(PQkey, PQkey))__gl_vertLeq);
+   /* __gl_wgmaply_pqSortNewPriorityQ */
+   pq=tess->pq=pqNewPriorityQ((int (*)(PQkey, PQkey))__gl_wgmaply_vertLeq);
    if (pq==NULL)
    {
       return 0;
@@ -1565,7 +1565,7 @@ static int InitPriorityQ(GLUtesselator* tess)
    vHead=&tess->mesh->vHead;
    for(v=vHead->next; v!=vHead; v=v->next)
    {
-      v->pqHandle=pqInsert(pq, v); /* __gl_pqSortInsert */
+      v->pqHandle=pqInsert(pq, v); /* __gl_wgmaply_pqSortInsert */
       if (v->pqHandle==LONG_MAX)
       {
          break;
@@ -1573,8 +1573,8 @@ static int InitPriorityQ(GLUtesselator* tess)
    }
 
    if (v!=vHead || !pqInit(pq))
-   {  /* __gl_pqSortInit */
-      pqDeletePriorityQ(tess->pq); /* __gl_pqSortDeletePriorityQ */
+   {  /* __gl_wgmaply_pqSortInit */
+      pqDeletePriorityQ(tess->pq); /* __gl_wgmaply_pqSortDeletePriorityQ */
       tess->pq=NULL;
       return 0;
    }
@@ -1584,7 +1584,7 @@ static int InitPriorityQ(GLUtesselator* tess)
 
 static void DonePriorityQ(GLUtesselator* tess)
 {
-   pqDeletePriorityQ(tess->pq); /* __gl_pqSortDeletePriorityQ */
+   pqDeletePriorityQ(tess->pq); /* __gl_wgmaply_pqSortDeletePriorityQ */
 }
 
 /*
@@ -1618,7 +1618,7 @@ static int RemoveDegenerateFaces(GLUmesh* mesh)
       {
          /* A face with only two edges */
          AddWinding(e->Onext, e);
-         if (!__gl_meshDelete(e))
+         if (!__gl_wgmaply_meshDelete(e))
          {
             return 0;
          }
@@ -1628,9 +1628,9 @@ static int RemoveDegenerateFaces(GLUmesh* mesh)
    return 1;
 }
 
-int __gl_computeInterior(GLUtesselator* tess)
+int __gl_wgmaply_computeInterior(GLUtesselator* tess)
 /*
- * __gl_computeInterior( tess ) computes the planar arrangement specified
+ * __gl_wgmaply_computeInterior( tess ) computes the planar arrangement specified
  * by the given contours, and further subdivides this arrangement
  * into regions.  Each region is marked "inside" if it belongs
  * to the polygon, according to the rule given by tess->windingRule.
@@ -1655,12 +1655,12 @@ int __gl_computeInterior(GLUtesselator* tess)
    }
    InitEdgeDict(tess);
 
-   /* __gl_pqSortExtractMin */
+   /* __gl_wgmaply_pqSortExtractMin */
    while((v=(GLUvertex*)pqExtractMin(tess->pq))!=NULL)
    {
       for (;;)
       {
-         vNext=(GLUvertex*)pqMinimum(tess->pq);  /* __gl_pqSortMinimum */
+         vNext=(GLUvertex*)pqMinimum(tess->pq);  /* __gl_wgmaply_pqSortMinimum */
          if (vNext==NULL || !VertEq(vNext, v))
          {
             break;
@@ -1680,14 +1680,14 @@ int __gl_computeInterior(GLUtesselator* tess)
           * gap between them.  This kind of error is especially obvious
           * when using boundary extraction (GLU_TESS_BOUNDARY_ONLY).
           */
-         vNext=(GLUvertex*)pqExtractMin(tess->pq);  /* __gl_pqSortExtractMin*/
+         vNext=(GLUvertex*)pqExtractMin(tess->pq);  /* __gl_wgmaply_pqSortExtractMin*/
          SpliceMergeVertices(tess, v->anEdge, vNext->anEdge);
       }
       SweepEvent(tess, v);
    }
 
    /* Set tess->event for debugging purposes */
-   /* __GL_DICTLISTKEY */ /* __GL_DICTLISTMIN */
+   /* __gl_wgmaply_DICTLISTKEY */ /* __gl_wgmaply_DICTLISTMIN */
    tess->event=((ActiveRegion*)dictKey(dictMin(tess->dict)))->eUp->Org;
    DebugEvent(tess);
    DoneEdgeDict(tess);
@@ -1697,7 +1697,7 @@ int __gl_computeInterior(GLUtesselator* tess)
    {
       return 0;
    }
-   __gl_meshCheckMesh(tess->mesh);
+   __gl_wgmaply_meshCheckMesh(tess->mesh);
 
    return 1;
 }

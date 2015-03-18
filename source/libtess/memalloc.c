@@ -37,7 +37,7 @@
 #include "memalloc.h"
 #include "string.h"
 
-int __gl_memInit(size_t maxFast)
+int __gl_wgmaply_memInit(size_t maxFast)
 {
    #ifndef NO_MALLOPT
       /*  mallopt( M_MXFAST, maxFast );*/
@@ -50,7 +50,7 @@ int __gl_memInit(size_t maxFast)
 }
 
 #ifdef MEMORY_DEBUG
-void* __gl_memAlloc(size_t n)
+void* __gl_wgmaply_memAlloc(size_t n)
 {
   return memset(malloc(n), 0xA5, n);
 }

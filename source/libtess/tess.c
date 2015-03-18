@@ -60,12 +60,12 @@
                                             GLfloat weight[4], void **dataOut) {}
 /*ARGSUSED*/ static void APIENTRY noMesh(GLUmesh* mesh) {}
 
-/*ARGSUSED*/ void APIENTRY __gl_noBeginData(GLenum type, void* polygonData) {}
-/*ARGSUSED*/ void APIENTRY __gl_noEdgeFlagData(GLboolean boundaryEdge, void* polygonData) {}
-/*ARGSUSED*/ void APIENTRY __gl_noVertexData(void* data, void* polygonData) {}
-/*ARGSUSED*/ void APIENTRY __gl_noEndData(void* polygonData) {}
-/*ARGSUSED*/ void APIENTRY __gl_noErrorData( GLenum errnum, void* polygonData) {}
-/*ARGSUSED*/ void APIENTRY __gl_noCombineData(GLfloat coords[3], void* data[4],
+/*ARGSUSED*/ void APIENTRY __gl_wgmaply_noBeginData(GLenum type, void* polygonData) {}
+/*ARGSUSED*/ void APIENTRY __gl_wgmaply_noEdgeFlagData(GLboolean boundaryEdge, void* polygonData) {}
+/*ARGSUSED*/ void APIENTRY __gl_wgmaply_noVertexData(void* data, void* polygonData) {}
+/*ARGSUSED*/ void APIENTRY __gl_wgmaply_noEndData(void* polygonData) {}
+/*ARGSUSED*/ void APIENTRY __gl_wgmaply_noErrorData( GLenum errnum, void* polygonData) {}
+/*ARGSUSED*/ void APIENTRY __gl_wgmaply_noCombineData(GLfloat coords[3], void* data[4],
                                               GLfloat weight[4], void** outData,
                                               void* polygonData) {}
 
@@ -115,12 +115,12 @@ GLAPI GLUtesselator* APIENTRY gluNewTess(void)
    tess->callCombine=&noCombine;
    tess->callMesh=&noMesh;
 
-   tess->callBeginData=&__gl_noBeginData;
-   tess->callEdgeFlagData=&__gl_noEdgeFlagData;
-   tess->callVertexData=&__gl_noVertexData;
-   tess->callEndData=&__gl_noEndData;
-   tess->callErrorData=&__gl_noErrorData;
-   tess->callCombineData=&__gl_noCombineData;
+   tess->callBeginData=&__gl_wgmaply_noBeginData;
+   tess->callEdgeFlagData=&__gl_wgmaply_noEdgeFlagData;
+   tess->callVertexData=&__gl_wgmaply_noVertexData;
+   tess->callEndData=&__gl_wgmaply_noEndData;
+   tess->callErrorData=&__gl_wgmaply_noErrorData;
+   tess->callCombineData=&__gl_wgmaply_noCombineData;
 
    tess->polygonData=NULL;
 
@@ -132,7 +132,7 @@ static void MakeDormant( GLUtesselator *tess )
    /* Return the tessellator to its original dormant state. */
    if (tess->mesh!=NULL)
    {
-      __gl_meshDeleteMesh(tess->mesh);
+      __gl_wgmaply_meshDeleteMesh(tess->mesh);
    }
    tess->state=T_DORMANT;
    tess->lastEdge=NULL;
@@ -279,7 +279,7 @@ GLAPI void APIENTRY gluTessCallback(GLUtesselator* tess, GLenum which, _GLUfuncp
            return;
       case GLU_TESS_BEGIN_DATA:
            tess->callBeginData=(fn==NULL) ?
-              &__gl_noBeginData: (void (APIENTRY*)(GLenum, void*))fn;
+              &__gl_wgmaply_noBeginData: (void (APIENTRY*)(GLenum, void*))fn;
            return;
       case GLU_TESS_EDGE_FLAG:
            tess->callEdgeFlag=(fn==NULL) ? &noEdgeFlag: (void (APIENTRY*)(GLboolean))fn;
@@ -290,7 +290,7 @@ GLAPI void APIENTRY gluTessCallback(GLUtesselator* tess, GLenum which, _GLUfuncp
            return;
       case GLU_TESS_EDGE_FLAG_DATA:
            tess->callEdgeFlagData=(fn==NULL) ?
-              &__gl_noEdgeFlagData: (void (APIENTRY*)(GLboolean, void*))fn;
+              &__gl_wgmaply_noEdgeFlagData: (void (APIENTRY*)(GLboolean, void*))fn;
            /* If the client wants boundary edges to be flagged,
             * we render everything as separate triangles (no strips or fans).
             */
@@ -301,26 +301,26 @@ GLAPI void APIENTRY gluTessCallback(GLUtesselator* tess, GLenum which, _GLUfuncp
            return;
       case GLU_TESS_VERTEX_DATA:
            tess->callVertexData=(fn==NULL) ?
-              &__gl_noVertexData: (void (APIENTRY*)(void*, void*))fn;
+              &__gl_wgmaply_noVertexData: (void (APIENTRY*)(void*, void*))fn;
            return;
       case GLU_TESS_END:
            tess->callEnd=(fn==NULL) ? &noEnd: (void (APIENTRY*)(void))fn;
            return;
       case GLU_TESS_END_DATA:
-           tess->callEndData=(fn==NULL) ? &__gl_noEndData: (void (APIENTRY*)(void*))fn;
+           tess->callEndData=(fn==NULL) ? &__gl_wgmaply_noEndData: (void (APIENTRY*)(void*))fn;
            return;
       case GLU_TESS_ERROR:
            tess->callError=(fn==NULL) ? &noError: (void (APIENTRY*)(GLenum))fn;
            return;
       case GLU_TESS_ERROR_DATA:
-           tess->callErrorData=(fn==NULL) ? &__gl_noErrorData: (void (APIENTRY*)(GLenum, void*))fn;
+           tess->callErrorData=(fn==NULL) ? &__gl_wgmaply_noErrorData: (void (APIENTRY*)(GLenum, void*))fn;
            return;
       case GLU_TESS_COMBINE:
            tess->callCombine=(fn==NULL) ? &noCombine:
               (void (APIENTRY*)(GLfloat[3], void*[4], GLfloat[4], void**))fn;
            return;
       case GLU_TESS_COMBINE_DATA:
-           tess->callCombineData=(fn==NULL) ? &__gl_noCombineData:
+           tess->callCombineData=(fn==NULL) ? &__gl_wgmaply_noCombineData:
               (void (APIENTRY*)(GLfloat [3], void*[4], GLfloat[4], void**, void*))fn;
            return;
       case GLU_TESS_MESH:
@@ -340,12 +340,12 @@ static int AddVertex(GLUtesselator* tess, GLfloat coords[3], void* data)
    if (e==NULL)
    {
       /* Make a self-loop (one vertex, one edge). */
-      e=__gl_meshMakeEdge(tess->mesh);
+      e=__gl_wgmaply_meshMakeEdge(tess->mesh);
       if (e==NULL)
       {
          return 0;
       }
-      if (!__gl_meshSplice(e, e->Sym))
+      if (!__gl_wgmaply_meshSplice(e, e->Sym))
       {
          return 0;
       }
@@ -355,7 +355,7 @@ static int AddVertex(GLUtesselator* tess, GLfloat coords[3], void* data)
       /* Create a new vertex and edge which immediately follow e
        * in the ordering around the left face.
        */
-      if (__gl_meshSplitEdge(e)==NULL)
+      if (__gl_wgmaply_meshSplitEdge(e)==NULL)
       {
          return 0;
       }
@@ -397,7 +397,7 @@ static int EmptyCache(GLUtesselator* tess)
    CachedVertex* v=tess->cache;
    CachedVertex* vLast;
 
-   tess->mesh=__gl_meshNewMesh();
+   tess->mesh=__gl_wgmaply_meshNewMesh();
    if (tess->mesh==NULL)
    {
       return 0;
@@ -532,7 +532,7 @@ void APIENTRY gluTessEndPolygon(GLUtesselator* tess)
           * intersections, edge flags, and of course it does not generate
           * an explicit mesh either.
           */
-         if (__gl_renderCache(tess))
+         if (__gl_wgmaply_renderCache(tess))
          {
             tess->polygonData= NULL;
             return;
@@ -547,15 +547,15 @@ void APIENTRY gluTessEndPolygon(GLUtesselator* tess)
    /* Determine the polygon normal and project vertices onto the plane
     * of the polygon.
     */
-   __gl_projectPolygon(tess);
+   __gl_wgmaply_projectPolygon(tess);
 
-   /* __gl_computeInterior( tess ) computes the planar arrangement specified
+   /* __gl_wgmaply_computeInterior( tess ) computes the planar arrangement specified
     * by the given contours, and further subdivides this arrangement
     * into regions.  Each region is marked "inside" if it belongs
     * to the polygon, according to the rule given by tess->windingRule.
     * Each interior region is guaranteed be monotone.
     */
-   if (!__gl_computeInterior(tess))
+   if (!__gl_wgmaply_computeInterior(tess))
    {
       longjmp(tess->env, 1);     /* could've used a label */
    }
@@ -571,31 +571,31 @@ void APIENTRY gluTessEndPolygon(GLUtesselator* tess)
        */
       if (tess->boundaryOnly)
       {
-         rc=__gl_meshSetWindingNumber(mesh, 1, TRUE);
+         rc=__gl_wgmaply_meshSetWindingNumber(mesh, 1, TRUE);
       }
       else
       {
-         rc=__gl_meshTessellateInterior(mesh);
+         rc=__gl_wgmaply_meshTessellateInterior(mesh);
       }
       if (rc==0)
       {
          longjmp(tess->env,1);   /* could've used a label */
       }
 
-      __gl_meshCheckMesh(mesh);
+      __gl_wgmaply_meshCheckMesh(mesh);
 
       if (tess->callBegin!=&noBegin || tess->callEnd!=&noEnd ||
           tess->callVertex!=&noVertex || tess->callEdgeFlag!=&noEdgeFlag ||
-          tess->callBeginData!=&__gl_noBeginData || tess->callEndData!=&__gl_noEndData ||
-          tess->callVertexData!=&__gl_noVertexData || tess->callEdgeFlagData!=&__gl_noEdgeFlagData)
+          tess->callBeginData!=&__gl_wgmaply_noBeginData || tess->callEndData!=&__gl_wgmaply_noEndData ||
+          tess->callVertexData!=&__gl_wgmaply_noVertexData || tess->callEdgeFlagData!=&__gl_wgmaply_noEdgeFlagData)
       {
          if (tess->boundaryOnly)
          {
-            __gl_renderBoundary(tess, mesh);  /* output boundary contours */
+            __gl_wgmaply_renderBoundary(tess, mesh);  /* output boundary contours */
          }
          else
          {
-            __gl_renderMesh(tess, mesh);    /* output strips and fans */
+            __gl_wgmaply_renderMesh(tess, mesh);    /* output strips and fans */
          }
       }
 
@@ -607,14 +607,14 @@ void APIENTRY gluTessEndPolygon(GLUtesselator* tess)
           * the freedom for an implementation to not generate the exterior
           * faces in the first place.
           */
-         __gl_meshDiscardExterior(mesh);
+         __gl_wgmaply_meshDiscardExterior(mesh);
          (*tess->callMesh)(mesh);       /* user wants the mesh itself */
          tess->mesh = NULL;
          tess->polygonData= NULL;
          return;
       }
    }
-   __gl_meshDeleteMesh(mesh);
+   __gl_wgmaply_meshDeleteMesh(mesh);
    tess->polygonData=NULL;
    tess->mesh=NULL;
 }
