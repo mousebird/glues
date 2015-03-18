@@ -38,7 +38,7 @@
 #include "dict-list.h"
 #include "memalloc.h"
 
-/* really __gl_dictListNewDict */
+/* really __gl_wgmaply_dictListNewDict */
 Dict* dictNewDict(void* frame, int (*leq)(void *frame, DictKey key1, DictKey key2))
 {
    Dict* dict=(Dict*)memAlloc(sizeof(Dict));
@@ -61,7 +61,7 @@ Dict* dictNewDict(void* frame, int (*leq)(void *frame, DictKey key1, DictKey key
    return dict;
 }
 
-/* really __gl_dictListDeleteDict */
+/* really __gl_wgmaply_dictListDeleteDict */
 void dictDeleteDict(Dict* dict)
 {
   DictNode* node;
@@ -76,7 +76,7 @@ void dictDeleteDict(Dict* dict)
   memFree(dict);
 }
 
-/* really __gl_dictListInsertBefore */
+/* really __gl_wgmaply_dictListInsertBefore */
 DictNode* dictInsertBefore(Dict* dict, DictNode* node, DictKey key)
 {
    DictNode* newNode;
@@ -100,7 +100,7 @@ DictNode* dictInsertBefore(Dict* dict, DictNode* node, DictKey key)
    return newNode;
 }
 
-/* really __gl_dictListDelete */
+/* really __gl_wgmaply_dictListDelete */
 void dictDelete(Dict* dict, DictNode* node) /*ARGSUSED*/
 {
    node->next->prev=node->prev;
@@ -108,7 +108,7 @@ void dictDelete(Dict* dict, DictNode* node) /*ARGSUSED*/
    memFree(node);
 }
 
-/* really __gl_dictListSearch */
+/* really __gl_wgmaply_dictListSearch */
 DictNode* dictSearch(Dict* dict, DictKey key)
 {
    DictNode* node=&dict->head;

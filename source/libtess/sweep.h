@@ -39,13 +39,13 @@
 
 #include "mesh.h"
 
-/* __gl_computeInterior( tess ) computes the planar arrangement specified
+/* __gl_wgmaply_computeInterior( tess ) computes the planar arrangement specified
  * by the given contours, and further subdivides this arrangement
  * into regions.  Each region is marked "inside" if it belongs
  * to the polygon, according to the rule given by tess->windingRule.
  * Each interior region is guaranteed be monotone.
  */
-int __gl_computeInterior(GLUtesselator* tess);
+int __gl_wgmaply_computeInterior(GLUtesselator* tess);
 
 /* The following is here *only* for access by debugging routines */
 

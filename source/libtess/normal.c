@@ -213,7 +213,7 @@ extern int RandomSweep;
 /* Determine the polygon normal and project vertices onto the plane
  * of the polygon.
  */
-void __gl_projectPolygon(GLUtesselator* tess)
+void __gl_wgmaply_projectPolygon(GLUtesselator* tess)
 {
    GLUvertex *v, *vHead=&tess->mesh->vHead;
    GLfloat norm[3];

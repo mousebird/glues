@@ -120,42 +120,42 @@ struct GLUtesselator
   void* polygonData;    /* client data for current polygon */
 };
 
-GLAPI void APIENTRY __gl_noBeginData(GLenum type, void* polygonData);
-GLAPI void APIENTRY __gl_noEdgeFlagData(GLboolean boundaryEdge, void* polygonData);
-GLAPI void APIENTRY __gl_noVertexData(void* data, void* polygonData);
-GLAPI void APIENTRY __gl_noEndData(void* polygonData);
-GLAPI void APIENTRY __gl_noErrorData(GLenum errnum, void* polygonData);
-GLAPI void APIENTRY __gl_noCombineData(GLfloat coords[3], void* data[4],
+GLAPI void APIENTRY __gl_wgmaply_noBeginData(GLenum type, void* polygonData);
+GLAPI void APIENTRY __gl_wgmaply_noEdgeFlagData(GLboolean boundaryEdge, void* polygonData);
+GLAPI void APIENTRY __gl_wgmaply_noVertexData(void* data, void* polygonData);
+GLAPI void APIENTRY __gl_wgmaply_noEndData(void* polygonData);
+GLAPI void APIENTRY __gl_wgmaply_noErrorData(GLenum errnum, void* polygonData);
+GLAPI void APIENTRY __gl_wgmaply_noCombineData(GLfloat coords[3], void* data[4],
                                        GLfloat weight[4], void** outData,
                                        void* polygonData);
 
 #define CALL_BEGIN_OR_BEGIN_DATA(a)                     \
-   if (tess->callBeginData != &__gl_noBeginData)        \
+   if (tess->callBeginData != &__gl_wgmaply_noBeginData)        \
       (*tess->callBeginData)((a),tess->polygonData);    \
    else (*tess->callBegin)((a));
 
 #define CALL_VERTEX_OR_VERTEX_DATA(a)                   \
-   if (tess->callVertexData != &__gl_noVertexData)      \
+   if (tess->callVertexData != &__gl_wgmaply_noVertexData)      \
       (*tess->callVertexData)((a),tess->polygonData);   \
    else (*tess->callVertex)((a));
 
 #define CALL_EDGE_FLAG_OR_EDGE_FLAG_DATA(a)             \
-   if (tess->callEdgeFlagData != &__gl_noEdgeFlagData)  \
+   if (tess->callEdgeFlagData != &__gl_wgmaply_noEdgeFlagData)  \
       (*tess->callEdgeFlagData)((a),tess->polygonData); \
    else (*tess->callEdgeFlag)((a));
 
 #define CALL_END_OR_END_DATA()                          \
-   if (tess->callEndData != &__gl_noEndData)            \
+   if (tess->callEndData != &__gl_wgmaply_noEndData)            \
       (*tess->callEndData)(tess->polygonData);          \
    else (*tess->callEnd)();
 
 #define CALL_COMBINE_OR_COMBINE_DATA(a,b,c,d)           \
-   if (tess->callCombineData != &__gl_noCombineData)    \
+   if (tess->callCombineData != &__gl_wgmaply_noCombineData)    \
       (*tess->callCombineData)((a),(b),(c),(d),tess->polygonData); \
    else (*tess->callCombine)((a),(b),(c),(d));
 
 #define CALL_ERROR_OR_ERROR_DATA(a)                     \
-   if (tess->callErrorData != &__gl_noErrorData)        \
+   if (tess->callErrorData != &__gl_wgmaply_noErrorData)        \
       (*tess->callErrorData)((a),tess->polygonData);    \
    else (*tess->callError)((a));
 

@@ -42,14 +42,14 @@
 #define memRealloc      realloc
 #define memFree         free
 
-#define memInit         __gl_memInit
-extern int              __gl_memInit(size_t);
+#define memInit         __gl_wgmaply_memInit
+extern int              __gl_wgmaply_memInit(size_t);
 
 #ifndef MEMORY_DEBUG
    #define memAlloc malloc
 #else
-   #define memAlloc __gl_memAlloc
-   extern void* __gl_memAlloc(size_t);
+   #define memAlloc __gl_wgmaply_memAlloc
+   extern void* __gl_wgmaply_memAlloc(size_t);
 #endif /* MEMORY_DEBUG */
 
 #endif /* __memalloc_simple_h_ */

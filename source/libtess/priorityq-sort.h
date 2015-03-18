@@ -57,8 +57,8 @@
 #define PQhandle  PQSortHandle
 #define PriorityQ PriorityQSort
 
-#define pqNewPriorityQ(leq)   __gl_pqSortNewPriorityQ(leq)
-#define pqDeletePriorityQ(pq) __gl_pqSortDeletePriorityQ(pq)
+#define pqNewPriorityQ(leq)   __gl_wgmaply_pqSortNewPriorityQ(leq)
+#define pqDeletePriorityQ(pq) __gl_wgmaply_pqSortDeletePriorityQ(pq)
 
 /* The basic operations are insertion of a new key (pqInsert),
  * and examination/extraction of a key whose value is minimum
@@ -73,12 +73,12 @@
  * If the heap is empty, pqMinimum/pqExtractMin will return a NULL key.
  * This may also be tested with pqIsEmpty.
  */
-#define pqInit(pq)          __gl_pqSortInit(pq)
-#define pqInsert(pq,key)    __gl_pqSortInsert(pq,key)
-#define pqMinimum(pq)       __gl_pqSortMinimum(pq)
-#define pqExtractMin(pq)    __gl_pqSortExtractMin(pq)
-#define pqDelete(pq,handle) __gl_pqSortDelete(pq,handle)
-#define pqIsEmpty(pq)       __gl_pqSortIsEmpty(pq)
+#define pqInit(pq)          __gl_wgmaply_pqSortInit(pq)
+#define pqInsert(pq,key)    __gl_wgmaply_pqSortInsert(pq,key)
+#define pqMinimum(pq)       __gl_wgmaply_pqSortMinimum(pq)
+#define pqExtractMin(pq)    __gl_wgmaply_pqSortExtractMin(pq)
+#define pqDelete(pq,handle) __gl_wgmaply_pqSortDelete(pq,handle)
+#define pqIsEmpty(pq)       __gl_wgmaply_pqSortIsEmpty(pq)
 
 /* Since we support deletion the data structure is a little more
  * complicated than an ordinary heap.  "nodes" is the heap itself;
