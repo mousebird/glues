@@ -96,7 +96,7 @@ typedef GLUquadric GLUquadricObj;
 #endif /* APIENTRYP */
 
 /* Internal convenience typedefs */
-typedef void (APIENTRYP _GLUfuncptr)();
+typedef void (APIENTRYP _GLUfuncptr)(void);
 
 GLAPI GLUquadric* APIENTRY gluNewQuadric(void);
 GLAPI void APIENTRY gluDeleteQuadric(GLUquadric* state);

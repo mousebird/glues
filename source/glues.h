@@ -126,7 +126,7 @@ typedef GLUtesselator GLUtriangulatorObj;
 typedef GLUnurbs GLUnurbsObj;
 
 /* Internal convenience typedefs */
-typedef void (APIENTRYP _GLUfuncptr)();
+typedef void (APIENTRYP _GLUfuncptr)(void);
 
 GLAPI GLboolean APIENTRY gluCheckExtension(const GLubyte* extName, const GLubyte* extString);
 GLAPI void APIENTRY gluCylinder(GLUquadric* quad, GLfloat base, GLfloat top, GLfloat height, GLint slices, GLint stacks);
